@@ -5,9 +5,9 @@ OCR project
 
 # Process
 ## 0. Setup
-Py 3.12\
-Libs: ```pip install pandas numpy matplotlib seaborn scikit-learn opencv-python albumentations optuna fastapi uvicorn transformers datasets sentence-transformers faiss-cpu```\
-PyTorch GPU: ```pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121```
+Using Py 3.12\
+Installed Libs: ```pip install pandas numpy matplotlib seaborn scikit-learn opencv-python albumentations optuna fastapi uvicorn transformers datasets sentence-transformers faiss-cpu```\
+Installed PyTorch GPU: ```pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121```
 
 ## 1. Data collection
 Downloaded and parsed EMNIST, created emnist.csv format image -> text (first 10000 imgs)\
@@ -15,3 +15,11 @@ Downloaded and parsed IAM (ascii, lines), created iam.csv format image -> text\
 Combined data into full_dataset.csv
 
 ## 2. Data preprocessing
+Performed:
+- data resized and grayscaled
+- noise reduction
+- data binarized and normalized
+- data split train/val/test
+- leakage check
+
+## 3. Exploratory Data Analysis (EDA)
