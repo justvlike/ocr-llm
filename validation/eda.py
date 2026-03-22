@@ -2,8 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
 from collections import Counter
+import os
 
-df = pd.read_csv("../data/processed/train.csv")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+csv_path = os.path.join(BASE_DIR, "data", "processed", "train.csv")
+df = pd.read_csv(csv_path)
 
 print(f"Initial dataset size: {len(df)}")
 
@@ -19,7 +22,8 @@ sample = df.sample(5)
 plt.figure(figsize=(12, 4))
 
 for i, (_, row) in enumerate(sample.iterrows()):
-    img = Image.open(row["image_path"])
+    img_path = os.path.join(BASE_DIR, row["image_path"])
+    img = Image.open(img_path)
 
     plt.subplot(1, 5, i + 1)
     plt.imshow(img, cmap="gray")
@@ -55,7 +59,7 @@ plt.bar(chars, counts)
 plt.title("Top 20 Characters")
 plt.show()
 
-# Hard cases check
+# Hard (longest) cases check
 threshold = df["text_length"].quantile(0.95)
 long_texts = df[df["text_length"] > threshold]
 
@@ -65,7 +69,8 @@ if len(long_texts) > 0:
     plt.figure(figsize=(12, 4))
 
     for i, (_, row) in enumerate(sample.iterrows()):
-        img = Image.open(row["image_path"])
+        img_path = os.path.join(BASE_DIR, row["image_path"])
+        img = Image.open(img_path)
 
         plt.subplot(1, 5, i + 1)
         plt.imshow(img, cmap="gray")
@@ -83,7 +88,8 @@ if len(short_texts) > 0:
     plt.figure(figsize=(12, 4))
 
     for i, (_, row) in enumerate(sample.iterrows()):
-        img = Image.open(row["image_path"])
+        img_path = os.path.join(BASE_DIR, row["image_path"])
+        img = Image.open(img_path)
 
         plt.subplot(1, 5, i + 1)
         plt.imshow(img, cmap="gray")

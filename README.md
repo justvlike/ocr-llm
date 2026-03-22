@@ -23,3 +23,10 @@ Performed:
 - leakage check
 
 ## 3. Exploratory Data Analysis (EDA)
+- visualized random data for manual check
+- built scale to analyze data(text) length distribution
+- built scale to analyze most used characters
+- visualized hardest cases (outstanding text length)
+- visualized simplest cases (minimal text length)
+
+## 4. Baseline model
