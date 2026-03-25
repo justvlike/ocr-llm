@@ -1,11 +1,13 @@
 import os
+
+import cv2
+import editdistance
+import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset
 from PIL import Image
-import torchvision.transforms as transforms
-import editdistance
+from torch.utils.data import Dataset
 
 # Globals
 IMG_HEIGHT = 32
@@ -20,7 +22,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Dataset
 class OCRDataset(Dataset):
-    def __init__(self, csv_path, base_dir=None, max_len=MAX_TEXT_LEN):
+    def __init__(self, csv_path, base_dir=None, max_len=MAX_TEXT_LEN, transform=None):
         self.base_dir = base_dir or os.path.dirname(os.path.abspath(__file__))
         self.df = pd.read_csv(csv_path)
 
@@ -30,11 +32,7 @@ class OCRDataset(Dataset):
         self.df = self.df[self.df["text"].str.strip() != ""]
         self.df = self.df[self.df["text"].str.len() <= max_len]
 
-        self.transform = transforms.Compose([
-            transforms.Grayscale(),
-            transforms.Resize((IMG_HEIGHT, IMG_WIDTH)),
-            transforms.ToTensor()
-        ])
+        self.transform = transform
 
         print(f"Loaded dataset: {len(self.df)} samples")
 
@@ -47,10 +45,24 @@ class OCRDataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
-
         img_path = os.path.join(self.base_dir, row["image_path"])
-        img = Image.open(img_path).convert("RGB")
-        img = self.transform(img)
+
+
+        img = Image.open(img_path).convert("L")
+        img = np.array(img)
+
+        if self.transform:
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            img = self.transform(image=img)["image"]
+            img = img.mean(dim=0, keepdim=True)
+        else:
+            import torchvision.transforms as transforms
+            default_transform = transforms.Compose([
+                transforms.ToPILImage(),
+                transforms.Resize((IMG_HEIGHT, IMG_WIDTH)),
+                transforms.ToTensor()
+            ])
+            img = default_transform(img)
 
         label = torch.tensor(self.encode(row["text"]), dtype=torch.long)
 
@@ -89,6 +101,56 @@ class CRNN(nn.Module):
         x, _ = self.rnn(x)
         x = self.fc(x)
         x = x.permute(1, 0, 2)  # (T, B, C)
+        return x
+
+class CRNNImproved(nn.Module):
+    def __init__(self, num_classes):
+        super().__init__()
+
+        self.cnn = nn.Sequential(
+            nn.Conv2d(1, 64, 3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),
+
+            nn.Conv2d(64, 128, 3, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),
+
+            nn.Conv2d(128, 256, 3, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+        )
+
+        self.rnn = nn.LSTM(
+            input_size=256 * (IMG_HEIGHT // 4),
+            hidden_size=256,
+            num_layers=2,
+            bidirectional=True,
+            batch_first=True
+        )
+
+        self.dropout = nn.Dropout(0.3)
+
+        self.fc = nn.Linear(512, num_classes)
+
+    def forward(self, x):
+        x = self.cnn(x)
+
+        b, c, h, w = x.size()
+
+        x = x.permute(0, 3, 1, 2)
+        x = x.contiguous().view(b, w, c * h)
+
+        x, _ = self.rnn(x)
+
+        x = self.dropout(x)
+
+        x = self.fc(x)
+
+        x = x.permute(1, 0, 2)
+
         return x
 
 # Greedy decoder

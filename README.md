@@ -35,5 +35,17 @@ Performed:
 - saved into crnn_baseline.pth
 
 ## 5. Metrics
-- сalculate CER, WER in crnn_validate_baseline.py
-- зrovided random visualization
+- сalculated CER, WER in crnn_validate_baseline.py
+- provided randomized visualization
+- saved model baseline to crnn_baseline.py
+
+## 6. Improvements
+- introduced improved cnn model with augmentations: noise(Gaussian, ISO, CoarseDropout), 
+blur, rotation, brightness/contrast, elastic transform in train_improved.py
+- used Dropout + BatchNorm
+- LR lowered compared to base model, epochs now 70 instead of 50
+- extracted CER, WER in crnn_validate_baseline.py
+- CER, WER comparatively lower than baseline
+
+## 7. Hyperparameter tuning
+- 
