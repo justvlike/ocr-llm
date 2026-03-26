@@ -15,7 +15,6 @@ OCR project
 - combined data into full_dataset.csv
 
 ## 2. Data preprocessing
-Performed:
 - data resized and grayscaled
 - noise reduction
 - data binarized and normalized
@@ -35,7 +34,7 @@ Performed:
 - saved into crnn_baseline.pth
 
 ## 5. Metrics
-- сalculated CER, WER in crnn_validate_baseline.py
+- calculated CER, WER in crnn_validate_baseline.py
 - provided randomized visualization
 - saved model baseline to crnn_baseline.py
 
@@ -48,4 +47,7 @@ blur, rotation, brightness/contrast, elastic transform in train_improved.py
 - CER, WER comparatively lower than baseline
 
 ## 7. Hyperparameter tuning
-- 
+- installed Optuna and experimented with various model parameters in train_baseline_optuna.py
+- extracted best parameters in 20 tries (5 epochs)
+- applied to baseline model - small, but noticeable progress in CER and WER, confirmed by manual check
+

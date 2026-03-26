@@ -70,7 +70,7 @@ class OCRDataset(Dataset):
 
 # CRNN Model
 class CRNN(nn.Module):
-    def __init__(self, num_classes):
+    def __init__(self, num_classes, hidden_size=256):
         super().__init__()
 
         self.cnn = nn.Sequential(
@@ -85,13 +85,13 @@ class CRNN(nn.Module):
 
         self.rnn = nn.LSTM(
             input_size=128 * (IMG_HEIGHT // 4),
-            hidden_size=256,
+            hidden_size=hidden_size,
             num_layers=2,
             bidirectional=True,
             batch_first=True
         )
 
-        self.fc = nn.Linear(512, num_classes)
+        self.fc = nn.Linear(hidden_size * 2, num_classes)
 
     def forward(self, x):
         x = self.cnn(x)

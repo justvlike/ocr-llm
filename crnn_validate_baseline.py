@@ -28,7 +28,7 @@ val_loader = DataLoader(
 )
 
 # Model init
-model = CRNN(num_classes=len("abcdefghijklmnopqrstuvwxyz0123456789 ")+1).to(DEVICE)
+model = CRNN(num_classes=len("abcdefghijklmnopqrstuvwxyz0123456789 ")+1, hidden_size=512).to(DEVICE)
 model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
 model.eval()
 
@@ -58,7 +58,7 @@ print(f"Validation CER: {sum(all_cer)/len(all_cer):.4f}")
 print(f"Validation WER: {sum(all_wer)/len(all_wer):.4f}")
 
 # Visualization
-sample = [val_dataset[i] for i in range(0, 5)]
+sample = [val_dataset[i] for i in range(12, 17)]
 plt.figure(figsize=(20, 4))
 
 for i, (img, label, length) in enumerate(sample):

@@ -9,7 +9,7 @@ train_csv = os.path.join(BASE_DIR, "data", "processed", "train.csv")
 val_csv = os.path.join(BASE_DIR, "data", "processed", "val.csv")
 IMG_HEIGHT = 32
 IMG_WIDTH = 256
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 EPOCHS = 50
 MAX_TEXT_LEN = 32
 
@@ -29,10 +29,13 @@ train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, co
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn)
 
 # Model init
-model = CRNN(num_classes=len(char_to_idx) + 1).to(DEVICE)
+model = CRNN(
+    num_classes=len(char_to_idx) + 1,
+    hidden_size=512
+).to(DEVICE)
 
 criterion = nn.CTCLoss(blank=0)
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+optimizer = torch.optim.Adam(model.parameters(), lr=4.33e-4)
 
 # Train loop
 for epoch in range(EPOCHS):
