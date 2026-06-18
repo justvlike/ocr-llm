@@ -9,17 +9,17 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 # CONFIG
 # =====================================================
 
-MODE = "test"  # train | test | both
+MODE = "train"  # train | test | both
 
 BASE_DIR = "dataset"
 
-TRAIN_DIR = os.path.join(BASE_DIR, "train")
+TRAIN_DIR = os.path.join(BASE_DIR, "train_critical")
 TEST_DIR = os.path.join(BASE_DIR, "test_trocr")
 
 TRAIN_IMG = os.path.join(TRAIN_DIR, "images")
 TEST_IMG = os.path.join(TEST_DIR, "images")
 
-FONT_DIR = os.path.join(BASE_DIR, "fonts/trocr")
+FONT_DIR = os.path.join(BASE_DIR, "fonts")
 
 IMG_W = 256
 IMG_H = 96   # 🔥 increased height for CRNN stability
